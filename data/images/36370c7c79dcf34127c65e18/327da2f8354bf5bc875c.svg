@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="240" viewBox="0 0 860 240">
+  <rect width="860" height="240" rx="18" fill="#eef4ff"/>
+  <text x="430" y="52" text-anchor="middle" font-family="Microsoft YaHei, sans-serif"
+        font-size="24" font-weight="600" fill="#17345f">示例：等待期 90 日</text>
+  <line x1="90" y1="132" x2="770" y2="132" stroke="#9cb4d8" stroke-width="3"/>
+  <circle cx="90" cy="132" r="10" fill="#155eef"/>
+  <circle cx="770" cy="132" r="10" fill="#34a26b"/>
+  <text x="90" y="178" text-anchor="middle" font-family="Microsoft YaHei, sans-serif"
+        font-size="18" fill="#40516f">合同生效</text>
+  <text x="430" y="110" text-anchor="middle" font-family="Microsoft YaHei, sans-serif"
+        font-size="18" fill="#40516f">疾病等待期：90 日内不承担约定责任</text>
+  <text x="770" y="178" text-anchor="middle" font-family="Microsoft YaHei, sans-serif"
+        font-size="18" fill="#40516f">等待期结束</text>
+  <text x="430" y="212" text-anchor="middle" font-family="Microsoft YaHei, sans-serif"
+        font-size="13" fill="#6b7b96">意外伤害通常不受等待期限制，具体以条款为准</text>
+</svg>

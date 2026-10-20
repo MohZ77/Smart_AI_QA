@@ -1,0 +1,77 @@
+version: 1
+
+# 仓库不预设数据规模；按实际授权数据统计，目标和缺口由接入方配置。
+targets: {}
+
+sources:
+  regulations:
+    dir: data/kb/regulations
+    name: 金融法规
+    formats: [pdf, html, md, txt]
+    suggested_sources:
+      - 国家金融监督管理总局公开法规
+      - 中国证监会公开规章与规范性文件
+      - 中国人民银行公开政策文件
+    license_required: true
+
+  product_docs:
+    dir: data/kb/products
+    name: 理财产品文档
+    formats: [pdf, html, md, docx]
+    asset_classes: [fund, insurance, bond, bank_wealth]
+    channels:
+      - priority: 1
+        type: official_disclosure
+        name: 中国理财网
+        url: https://www.chinawealth.com.cn
+        scope: 银行理财说明书、风险揭示书、产品合同、净值公告
+      - priority: 1
+        type: official_disclosure
+        name: 巨潮资讯网
+        url: https://www.cninfo.com.cn
+        scope: 公募基金招募说明书、基金合同、定期报告
+      - priority: 1
+        type: official_disclosure
+        name: 中国保险行业协会产品信息库
+        url: https://www.iachina.cn
+        scope: 备案条款、费率表、产品说明书
+      - priority: 2
+        type: issuer_official
+        name: 发行机构官网
+        scope: 基金公司、保险公司、理财公司官网的最新版本
+      - priority: 3
+        type: authorized_vendor
+        name: Wind / iFinD / Choice / 普益标准
+        scope: 企业授权批量数据与每日增量
+      - priority: 4
+        type: sales_platform
+        name: 银行/互联网金融代销平台
+        scope: 产品详情、风险提示、交易规则，仅作补充
+      - priority: 5
+        type: controlled_crawl
+        name: 官方公开页面低速采集
+        scope: 仅公开披露内容，遵守 robots、频率和授权要求
+    suggested_sources:
+      - 基金公司官网招募说明书/产品资料概要
+      - 保险公司官网条款与费率表
+      - 银行理财子公司产品说明书
+    license_required: true
+
+  research_reports:
+    dir: data/kb/research
+    name: 研究报告
+    formats: [pdf, md]
+    suggested_sources:
+      - 券商研究所授权研报
+      - Wind/Choice 等授权研报摘要
+    license_required: true
+
+  faq:
+    dir: data/kb/faq
+    name: 金融 FAQ
+    formats: [jsonl, csv]
+    suggested_sources:
+      - 平台已授权的历史客服 FAQ
+      - 持牌投教内容
+      - 监管公开问答
+    license_required: true

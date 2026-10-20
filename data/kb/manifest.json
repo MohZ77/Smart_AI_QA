@@ -1,0 +1,66 @@
+{
+  "generated_at": "2026-10-20T16:54:01+0800",
+  "targets": {},
+  "sources": {
+    "regulations": {
+      "name": "金融法规",
+      "dir": "data\\kb\\regulations",
+      "files": 39,
+      "valid_records": 39,
+      "duplicates": 0,
+      "errors": [],
+      "suggested_sources": [
+        "国家金融监督管理总局公开法规",
+        "中国证监会公开规章与规范性文件",
+        "中国人民银行公开政策文件"
+      ],
+      "target": 0,
+      "gap": 0
+    },
+    "product_docs": {
+      "name": "理财产品文档",
+      "dir": "data\\kb\\products",
+      "files": 0,
+      "valid_records": 0,
+      "duplicates": 0,
+      "errors": [],
+      "suggested_sources": [
+        "基金公司官网招募说明书/产品资料概要",
+        "保险公司官网条款与费率表",
+        "银行理财子公司产品说明书"
+      ],
+      "target": 0,
+      "gap": 0
+    },
+    "research_reports": {
+      "name": "研究报告",
+      "dir": "data\\kb\\research",
+      "files": 0,
+      "valid_records": 0,
+      "duplicates": 0,
+      "errors": [],
+      "suggested_sources": [
+        "券商研究所授权研报",
+        "Wind/Choice 等授权研报摘要"
+      ],
+      "target": 0,
+      "gap": 0
+    },
+    "faq": {
+      "name": "金融 FAQ",
+      "dir": "data\\kb\\faq",
+      "files": 0,
+      "valid_records": 0,
+      "duplicates": 0,
+      "errors": [],
+      "suggested_sources": [
+        "平台已授权的历史客服 FAQ",
+        "持牌投教内容",
+        "监管公开问答"
+      ],
+      "target": 0,
+      "gap": 0
+    }
+  },
+  "note": "目标规模来自 sources.yaml；未配置目标时只统计实际文件。"
+}

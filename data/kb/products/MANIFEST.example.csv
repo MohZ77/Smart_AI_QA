@@ -1,0 +1,2 @@
+id,title,asset_class,doc_type,product_code,risk_level,publish_date,official_url,local_path,source,license
+fund-000001,示例消费主题基金说明书,fund,fund,F000001,R3,2026-09-20,,data/raw/fund/消费主题基金示例说明书.md,示例数据,synthetic-demo

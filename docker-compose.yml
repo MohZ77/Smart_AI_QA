@@ -1,0 +1,126 @@
+services:
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.5
+    environment:
+      ETCD_AUTO_COMPACTION_MODE: revision
+      ETCD_AUTO_COMPACTION_RETENTION: "1000"
+      ETCD_QUOTA_BACKEND_BYTES: "4294967296"
+      ETCD_SNAPSHOT_COUNT: "50000"
+    command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
+    volumes:
+      - etcd_data:/etcd
+    healthcheck:
+      test: ["CMD", "etcdctl", "endpoint", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio:RELEASE.2023-03-20T20-16-18Z
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    command: minio server /minio_data
+    volumes:
+      - minio_data:/minio_data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  milvus:
+    image: milvusdb/milvus:v2.4.6
+    command: ["milvus", "run", "standalone"]
+    environment:
+      ETCD_ENDPOINTS: etcd:2379
+      MINIO_ADDRESS: minio:9000
+    ports:
+      - "19530:19530"
+      - "9091:9091"
+    depends_on:
+      etcd:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    volumes:
+      - milvus_data:/var/lib/milvus
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: huixiaoan_root
+      MYSQL_DATABASE: huixiaoan
+      MYSQL_USER: huixiaoan
+      MYSQL_PASSWORD: huixiaoan_pass
+    ports:
+      - "3306:3306"
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-phuixiaoan_root"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      args:
+        INSTALL_ML: "1"
+    environment:
+      HUIXIAOAN_VECTOR_BACKEND: milvus
+      HUIXIAOAN_MILVUS_URI: http://milvus:19530
+      HUIXIAOAN_REDIS_URL: redis://redis:6379/0
+      HUIXIAOAN_LLM_PROVIDER: ${HUIXIAOAN_LLM_PROVIDER:-deepseek}
+      HUIXIAOAN_LLM_BASE_URL: ${HUIXIAOAN_LLM_BASE_URL:-https://api.deepseek.com/v1}
+      HUIXIAOAN_LLM_MODEL: ${HUIXIAOAN_LLM_MODEL:-deepseek-chat}
+      HUIXIAOAN_LLM_API_KEY: ${HUIXIAOAN_LLM_API_KEY:-}
+      HUIXIAOAN_EMBEDDING_PROVIDER: ${HUIXIAOAN_EMBEDDING_PROVIDER:-bge-m3}
+      HUIXIAOAN_EMBEDDING_MODEL: ${HUIXIAOAN_EMBEDDING_MODEL:-BAAI/bge-m3}
+      HUIXIAOAN_LOG_LEVEL: INFO
+      HUIXIAOAN_AUDIT_DB: mysql://huixiaoan:huixiaoan_pass@mysql:3306/huixiaoan
+      HUIXIAOAN_MEMORY_DB: mysql://huixiaoan:huixiaoan_pass@mysql:3306/huixiaoan
+      HUIXIAOAN_FAQ_DB: mysql://huixiaoan:huixiaoan_pass@mysql:3306/huixiaoan
+      HUIXIAOAN_AUTH_DB: mysql://huixiaoan:huixiaoan_pass@mysql:3306/huixiaoan
+      HUIXIAOAN_TOKEN_SECRET: ${HUIXIAOAN_TOKEN_SECRET:-}
+      WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
+      HUGGINGFACE_HUB_CACHE: /app/data/model_cache
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      milvus:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  etcd_data:
+  minio_data:
+  milvus_data:
+  redis_data:
+  mysql_data:

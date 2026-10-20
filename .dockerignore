@@ -1,0 +1,11 @@
+.venv
+.uv-cache
+.test-tmp
+__pycache__
+*.pyc
+.pytest_cache
+.git
+outputs
+data/index
+data/audit
+data/uploads

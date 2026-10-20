@@ -1,0 +1,22 @@
+{
+  "327da2f8354bf5bc875c": {
+    "id": "327da2f8354bf5bc875c",
+    "doc_id": "36370c7c79dcf34127c65e18",
+    "page": 1,
+    "alt": "等待期示意图",
+    "caption": "等待期示意图",
+    "mime": "image/svg+xml",
+    "path": "D:\\AI大模型应用开发资料\\做项目\\RAG-慧小安\\data\\images\\36370c7c79dcf34127c65e18\\327da2f8354bf5bc875c.svg",
+    "url": "/v1/images/327da2f8354bf5bc875c"
+  },
+  "dd317fa7fa6e86655e5fcfea": {
+    "id": "dd317fa7fa6e86655e5fcfea",
+    "doc_id": "user-uploads",
+    "page": 0,
+    "alt": "用户上传图片",
+    "caption": "用户上传图片",
+    "mime": "image/png",
+    "path": "D:\\AI大模型应用开发资料\\做项目\\RAG-慧小安\\data\\images\\user-uploads\\dd317fa7fa6e86655e5fcfea.png",
+    "url": "/v1/images/dd317fa7fa6e86655e5fcfea"
+  }
+}

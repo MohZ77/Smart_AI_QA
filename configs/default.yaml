@@ -1,0 +1,185 @@
+app:
+  name: 小智财答
+  version: 0.1.0
+  host: 0.0.0.0
+  port: 8000
+  request_timeout_s: 90
+  max_question_chars: 1000
+
+paths:
+  data_dir: data
+  raw_dir: data/raw
+  index_dir: data/index
+  image_dir: data/images
+  audit_db: data/audit/audit.db
+  memory_db: data/audit/memory.db
+  faq_db: data/audit/faq.db
+  auth_db: data/audit/auth.db
+  domain_dict: configs/domain_dict.txt
+
+ingestion:
+  max_chars: 520
+  min_chars: 120
+  overlap_chars: 100
+  parent_max_chars: 1600
+  table_max_chars: 1800
+  # MinerU 可选：配置后 PDF 优先走 MinerU，失败回退 pypdf
+  mineru_cmd: ""
+  mineru_timeout_s: 300
+  batch_size: 64
+  pii_masking: true
+  profiles:
+    research:
+      max_chars: 512
+      min_chars: 100
+      overlap_chars: 64
+      parent_max_chars: 1600
+    fund:
+      max_chars: 800
+      min_chars: 120
+      overlap_chars: 80
+      parent_max_chars: 1800
+    insurance:
+      max_chars: 520
+      min_chars: 100
+      overlap_chars: 100
+      parent_max_chars: 1600
+    default:
+      max_chars: 520
+      min_chars: 100
+      overlap_chars: 100
+      parent_max_chars: 1600
+
+embedding:
+  provider: hashing          # hashing | bge-m3 | openai
+  model: BAAI/bge-m3
+  dim: 1024
+  batch_size: 32
+  device: cpu
+  api_base: ""
+  api_key_env: HUIXIAOAN_EMBEDDING_API_KEY
+  cache_size: 20000
+
+vector_store:
+  backend: local             # local | milvus
+  milvus_uri: http://127.0.0.1:19530
+  milvus_token: ""
+  collection: huixiaoan_chunks
+  metric: IP
+  index_type: HNSW
+  consistency_level: Session
+
+collections:
+  enabled: true
+  names: [equity, fund, insurance, bond, bank_wealth, macro]
+  local_dir: data/index/collections
+  milvus_prefix: huixiaoan
+
+freshness:
+  research_days: 90
+  fund_nav_hours: 24
+  news_hours: 1
+
+retrieval:
+  vector_top_k: 30
+  bm25_top_k: 30
+  fusion_top_k: 20
+  final_top_k: 5
+  rrf_k: 60
+  reranker: heuristic        # heuristic | cross-encoder
+  reranker_model: BAAI/bge-reranker-base
+  reranker_device: cpu
+  min_confidence: 0.80
+  max_context_chars: 6000
+  parent_expansion: true
+
+query:
+  intent_llm: false
+  hyde_enabled: true
+  subquery_max: 4
+  history_turns: 5
+
+llm:
+  provider: offline          # qwen | deepseek | offline
+  base_url: ""
+  model: ""
+  api_key_env: HUIXIAOAN_LLM_API_KEY
+  temperature: 0.1
+  max_tokens: 900
+  timeout_s: 60
+  concurrency: 16
+  max_retries: 2
+
+vision:
+  provider: offline          # offline | openai | qwen-vl
+  base_url: ""
+  model: qwen-vl-max
+  api_key_env: HUIXIAOAN_VISION_API_KEY
+  timeout_s: 60
+  max_image_mb: 8
+
+documents:
+  max_file_mb: 20
+  max_context_chars: 12000
+
+resilience:
+  vector_fallback_local: true
+  audit_async: true
+  audit_queue_size: 10000
+  audit_batch_size: 50
+  audit_flush_interval_s: 1.0
+  audit_retention_days: 180
+  audit_spool_dir: data/audit/spool
+  memory_retention_days: 90
+
+compliance:
+  enabled: true
+  llm_judge: false
+  block_on_violation: true
+  require_citation: true
+  require_disclaimer: true
+  max_risk_gap: 0
+
+cache:
+  enabled: true
+  ttl_s: 3600
+  max_entries: 4096
+  redis_url: ""
+  namespace: huixiaoan
+
+faq:
+  threshold: 0.85
+  redis_top_n: 3000
+  redis_ttl_s: 21600
+
+security:
+  api_key: ""
+  rate_limit_qps: 20
+  admin_api_key: ""
+  # 多实例部署必须配置同一个签名密钥；留空时自动生成并保存在 auth_db 旁。
+  token_secret: "${HUIXIAOAN_TOKEN_SECRET:-}"
+  token_ttl_hours: 8
+  login_rate_per_minute: 10
+  require_auth_for_chat: false
+  # 仅当服务部署在可信反向代理之后时才信任 X-Forwarded-For
+  trust_proxy_headers: false
+  profile_cache_ttl_s: 30
+  default_tenant_id: default
+
+observability:
+  log_level: INFO
+  log_json: false
+  # 日志文件输出（控制台 + 滚动文件双通道）；留空则仅控制台
+  # 轮转：单文件 10MB，保留 3 个备份；也可用环境变量 HUIXIAOAN_LOG_FILE 覆盖
+  log_file: data/logs/huixiaoan.log
+
+bootstrap:
+  auto_ingest: true
+  seed_faq: true
+
+sync:
+  state_path: data/sync_state.json
+  output_dir: data/raw/sync
+  wind_jsonl: data/sync/wind.jsonl
+  fund_jsonl: data/sync/fund.jsonl
+  news_jsonl: data/sync/news.jsonl
